@@ -9,6 +9,12 @@ class myPythonTranslation(TranslationContainer):
     description = "python translation service that doesn't change anything"
     author = "@its_a_feature_"
 
+    async def generate_keys(self, inputMsg: TrGenerateEncryptionKeysMessage) -> TrGenerateEncryptionKeysMessageResponse:
+        response = TrGenerateEncryptionKeysMessageResponse(Success=True)
+        response.DecryptionKey = b""
+        response.EncryptionKey = b""
+        return response
+
     async def translate_to_c2_format(self, inputMsg: TrMythicC2ToCustomMessageFormatMessage) -> TrMythicC2ToCustomMessageFormatMessageResponse:
         response = TrMythicC2ToCustomMessageFormatMessageResponse(Success=True)
         response.Message = inputMsg.Message
