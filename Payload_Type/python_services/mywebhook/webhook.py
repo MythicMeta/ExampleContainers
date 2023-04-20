@@ -4,7 +4,7 @@ from mythic_container.MythicGoRPC.send_mythic_rpc_task_search import *
 
 class MyWebhook(Webhook):
 
-    async def new_startup(self, inputMsg: WebookMessage) -> None:
+    async def new_startup(self, inputMsg: WebhookMessage) -> None:
         message = {
             "channel": f"#{self.getWebhookChannel(inputMsg=inputMsg)}",
             "username": "Mythic",
@@ -39,7 +39,7 @@ class MyWebhook(Webhook):
         }
         await sendWebhookMessage(contents=message, url=self.getWebhookURL(inputMsg=inputMsg))
 
-    async def new_callback(self, inputMsg: WebookMessage) -> None:
+    async def new_callback(self, inputMsg: WebhookMessage) -> None:
         integrityLevelString = "MEDIUM"
         if inputMsg.Data.IntegrityLevel < 2:
             integrityLevelString = "LOW"
@@ -107,7 +107,7 @@ class MyWebhook(Webhook):
         }
         await sendWebhookMessage(contents=message, url=self.getWebhookURL(inputMsg=inputMsg))
 
-    async def new_feedback(self, inputMsg: WebookMessage) -> None:
+    async def new_feedback(self, inputMsg: WebhookMessage) -> None:
         feedbackMsgType = "Unknown Type"
         feedbackMsgColor = "#ffff00"
         feedbackMsgTitle = f"*{inputMsg.OperatorUsername}* submitted an unknown type: {inputMsg.Data.FeedbackType}"

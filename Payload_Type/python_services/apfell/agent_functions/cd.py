@@ -7,9 +7,7 @@ class CdArguments(TaskArguments):
         self.args = [
             CommandParameter(
                 name="path",
-                type=ParameterType.Array,
-                choices=["test", "bob"],
-                default_value=["test"],
+                type=ParameterType.String,
                 description="path to change directory to",
                 parameter_group_info=[ParameterGroupInfo()]
             ),
@@ -26,31 +24,6 @@ class CdArguments(TaskArguments):
         else:
             raise ValueError("Missing 'path' argument")
 
-async def formulate_output( task: PTTaskCompletionFunctionMessage) -> PTTaskCompletionFunctionMessageResponse:
-    # Check if the task is complete
-    response = PTTaskCompletionFunctionMessageResponse(Success=True, TaskStatus="success")
-    if task.TaskData.Task.Completed is True:
-        # Check if the task was a success
-        if task.TaskData.Task.Status == MythicStatus.Success:
-            # Get the interval and jitter from the task information
-            interval = task.TaskData.args.get_arg("interval")
-            jitter = task.TaskData.args.get_arg("interval")
-
-            # Format the output message
-            output = "Set sleep interval to {} seconds with a jitter of {}%.".format(
-                interval / 1000, jitter
-            )
-        else:
-            output = "Failed to execute sleep"
-
-        # Send the output to Mythic
-        resp = await MythicRPC().execute(
-            "create_output", task_id=task.TaskData.Task.ID, output=output.encode()
-        )
-
-        if resp != MythicStatus.Success:
-            raise Exception("Failed to execute MythicRPC function.")
-    return response
 
 class CdCommand(CommandBase):
     cmd = "cd"
@@ -61,21 +34,19 @@ class CdCommand(CommandBase):
     author = "@its_a_feature_"
     argument_class = CdArguments
     attackmapping = ["T1083"]
-    completion_functions = {"formulate_output": formulate_output}
-    script_only = True
 
-    async def create_tasking(self, task: MythicTask) -> MythicTask:
-        resp = await MythicRPC().execute("create_artifact", task_id=task.id,
-            artifact="fileManager.changeCurrentDirectoryPath",
-            artifact_type="API Called",
+    async def create_go_tasking(self, taskData: MythicCommandBase.PTTaskMessageAllData) -> MythicCommandBase.PTTaskCreateTaskingMessageResponse:
+        response = MythicCommandBase.PTTaskCreateTaskingMessageResponse(
+            TaskID=taskData.Task.ID,
+            Success=True,
         )
-        task.args.add_arg("path", 5, ParameterType.ChooseOne)
-        task.completed_callback_function = "formulate_output"
-        #task.status = "error, my custom error"
-        return task
+        await SendMythicRPCArtifactCreate(MythicRPCArtifactCreateMessage(
+            TaskID=taskData.Task.ID,
+            ArtifactMessage=f"fileManager.changeCurrentDirectoryPath",
+            BaseArtifactType="API"
+        ))
+        return response
 
-    async def process_response(self, response: AgentResponse):
-        pass
-
-
-
+    async def process_response(self, task: PTTaskMessageAllData, response: any) -> PTTaskProcessResponseMessageResponse:
+        resp = PTTaskProcessResponseMessageResponse(TaskID=task.Task.ID, Success=True)
+        return resp
