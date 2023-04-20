@@ -144,26 +144,26 @@ class MyWebhook(Webhook):
             taskDataResponse = await SendMythicRPCTaskSearch(MythicRPCTaskSearchMessage(TaskID=inputMsg.Data.TaskID))
             if taskDataResponse.Success and len(taskDataResponse.Tasks) == 1:
                 newBlock = {
-                        "type": "section",
-                        "fields": [
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Operation*\n{inputMsg.OperationName}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Callback / Task*\n{taskDataResponse.Tasks[0].CallbackID} / {taskDataResponse.Tasks[0].DisplayID}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Command*\n{taskDataResponse.Tasks[0].CommandName}"
-                            },
-                            {
-                                "type": "mrkdwn",
-                                "text": f"*Status*\n{taskDataResponse.Tasks[0].Status}"
-                            }
-                        ]
-                    }
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Operation*\n{inputMsg.OperationName}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Callback / Task*\n{taskDataResponse.Tasks[0].CallbackID} / {taskDataResponse.Tasks[0].DisplayID}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Command*\n{taskDataResponse.Tasks[0].CommandName}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": f"*Status*\n{taskDataResponse.Tasks[0].Status}"
+                        }
+                    ]
+                }
                 msgBlocks.append(newBlock)
             else:
                 logger.error(f"Failed to search for task data: {taskDataResponse.Error}")
@@ -240,6 +240,12 @@ class MyWebhook(Webhook):
         await sendWebhookMessage(contents=message, url=self.getWebhookURL(inputMsg=inputMsg))
 
     async def new_custom(self, inputMsg: WebhookMessage) -> None:
+        block_pieces = []
+        for key, val in inputMsg.Data.items():
+            block_pieces.append({
+                "type": "mrkdwn",
+                "text": f"*{key}*\n{val}"
+            })
         message = {
             "channel": f"#{self.getWebhookChannel(inputMsg=inputMsg)}",
             "username": "Mythic",
@@ -251,11 +257,8 @@ class MyWebhook(Webhook):
                     "blocks": [
                         {
                             "type": "section",
-                            "text": {
-                                "type": "mrkdwn",
-                                "text": f"{inputMsg.Data}"
-                            }
-                        },
+                            "fields": block_pieces
+                        }
                     ]
                 }
             ]
