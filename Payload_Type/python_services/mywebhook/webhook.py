@@ -87,7 +87,7 @@ class MyWebhook(Webhook):
                                 },
                                 {
                                     "type": "mrkdwn",
-                                    "text": f"*Type*\n{inputMsg.Data.AgentType}"
+                                    "text": f"*Type*\n{inputMsg.Data.PayloadType}"
                                 }
                             ]
                         },
@@ -202,4 +202,62 @@ class MyWebhook(Webhook):
             ]
         }
 
+        await sendWebhookMessage(contents=message, url=self.getWebhookURL(inputMsg=inputMsg))
+
+    async def new_alert(self, inputMsg: WebhookMessage) -> None:
+        message = {
+            "channel": f"#{self.getWebhookChannel(inputMsg=inputMsg)}",
+            "username": "Mythic",
+            "icon_emoji": ":mythic:",
+            "attachments": [
+                {
+                    "fallback": "New Event Alert!",
+                    "color": "#ff0000",
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": f"Source: {inputMsg.Data.Source}"
+                            }
+                        },
+                        {
+                            "type": "divider"
+                        },
+                        {
+                            "type": "section",
+                            "fields": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": f"{inputMsg.Data.Message}!"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        await sendWebhookMessage(contents=message, url=self.getWebhookURL(inputMsg=inputMsg))
+
+    async def new_custom(self, inputMsg: WebhookMessage) -> None:
+        message = {
+            "channel": f"#{self.getWebhookChannel(inputMsg=inputMsg)}",
+            "username": "Mythic",
+            "icon_emoji": ":mythic:",
+            "attachments": [
+                {
+                    "fallback": f"{inputMsg.OperatorUsername} Message!",
+                    "color": "#ff0000",
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": {
+                                "type": "mrkdwn",
+                                "text": f"{inputMsg.Data}"
+                            }
+                        },
+                    ]
+                }
+            ]
+        }
         await sendWebhookMessage(contents=message, url=self.getWebhookURL(inputMsg=inputMsg))
