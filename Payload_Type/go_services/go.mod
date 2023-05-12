@@ -2,7 +2,8 @@ module GoServices
 
 go 1.19
 
-require github.com/MythicMeta/MythicContainer v1.0.0-rc12
+//replace github.com/MythicMeta/MythicContainer => ../../../../MythicMeta/MythicContainer
+require github.com/MythicMeta/MythicContainer v1.0.6
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
