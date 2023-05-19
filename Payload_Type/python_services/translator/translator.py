@@ -17,10 +17,10 @@ class myPythonTranslation(TranslationContainer):
 
     async def translate_to_c2_format(self, inputMsg: TrMythicC2ToCustomMessageFormatMessage) -> TrMythicC2ToCustomMessageFormatMessageResponse:
         response = TrMythicC2ToCustomMessageFormatMessageResponse(Success=True)
-        response.Message = inputMsg.Message
+        response.Message = json.dumps(inputMsg.Message).encode()
         return response
 
     async def translate_from_c2_format(self, inputMsg: TrCustomMessageToMythicC2FormatMessage) -> TrCustomMessageToMythicC2FormatMessageResponse:
         response = TrCustomMessageToMythicC2FormatMessageResponse(Success=True)
-        response.Message = inputMsg.Message
+        response.Message = json.loads(inputMsg.Message)
         return response
