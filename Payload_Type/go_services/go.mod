@@ -3,7 +3,11 @@ module GoServices
 go 1.19
 
 //replace github.com/MythicMeta/MythicContainer => ../../../../MythicMeta/MythicContainer
-require github.com/MythicMeta/MythicContainer v1.0.6
+
+require (
+	github.com/MythicMeta/MythicContainer v1.0.9-rc05
+	github.com/mitchellh/mapstructure v1.5.0
+)
 
 require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
@@ -15,7 +19,6 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/rabbitmq/amqp091-go v1.8.0 // indirect
 	github.com/rs/zerolog v1.29.0 // indirect

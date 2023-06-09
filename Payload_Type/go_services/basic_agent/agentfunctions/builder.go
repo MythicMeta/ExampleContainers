@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	agentstructs "github.com/MythicMeta/MythicContainer/agent_structs"
-	"github.com/MythicMeta/MythicContainer/logging"
 	"github.com/MythicMeta/MythicContainer/mythicrpc"
 	"os"
 	"os/exec"
@@ -17,12 +16,12 @@ var payloadDefinition = agentstructs.PayloadType{
 	Name:                                   "basicAgent",
 	FileExtension:                          "bin",
 	Author:                                 "@xorrior, @djhohnstein, @Ne0nd0g, @its_a_feature_",
-	SupportedOS:                            []string{agentstructs.SUPPORTED_OS_LINUX, "customOS"},
+	SupportedOS:                            []string{agentstructs.SUPPORTED_OS_LINUX, agentstructs.SUPPORTED_OS_MACOS},
 	Wrapper:                                false,
 	CanBeWrappedByTheFollowingPayloadTypes: []string{},
 	SupportsDynamicLoading:                 false,
 	Description:                            "A fully featured macOS and Linux Golang agent",
-	SupportedC2Profiles:                    []string{"http", "websocket"},
+	SupportedC2Profiles:                    []string{"http", "websocket", "poseidon_tcp"},
 	MythicEncryptsData:                     true,
 	BuildParameters: []agentstructs.BuildParameter{
 		{
@@ -100,39 +99,86 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 	// https://golang.org/cmd/link/
 	ldflags := fmt.Sprintf("-s -w -X '%s.UUID=%s'", poseidon_repo_profile, payloadBuildMsg.PayloadUUID)
 	// Iterate over the C2 profile parameters and associated variable through Go's "-X" link flag
-	for key, val := range payloadBuildMsg.C2Profiles[0].Parameters {
-		// dictionary instances will be crypto components
+	for _, key := range payloadBuildMsg.C2Profiles[0].GetArgNames() {
 		if key == "AESPSK" {
-			cryptoVal := val.(map[string]interface{})
-			ldflags += fmt.Sprintf(" -X '%s.%s=%s'", poseidon_repo_profile, key, cryptoVal["enc_key"])
+			//cryptoVal := val.(map[string]interface{})
+			cryptoVal, err := payloadBuildMsg.C2Profiles[0].GetCryptoArg(key)
+			if err != nil {
+				payloadBuildResponse.Success = false
+				payloadBuildResponse.BuildStdErr = err.Error()
+				return payloadBuildResponse
+			}
+			ldflags += fmt.Sprintf(" -X '%s.%s=%s'", poseidon_repo_profile, key, cryptoVal.EncKey)
 		} else if key == "headers" {
-			if jsonBytes, err := json.Marshal(val); err != nil {
-
+			headers, err := payloadBuildMsg.C2Profiles[0].GetDictionaryArg(key)
+			if err != nil {
+				payloadBuildResponse.Success = false
+				payloadBuildResponse.BuildStdErr = err.Error()
+				return payloadBuildResponse
+			}
+			if jsonBytes, err := json.Marshal(headers); err != nil {
+				payloadBuildResponse.Success = false
+				payloadBuildResponse.BuildStdErr = err.Error()
+				return payloadBuildResponse
 			} else {
 				stringBytes := string(jsonBytes)
 				stringBytes = strings.ReplaceAll(stringBytes, "\"", "\\\"")
 				ldflags += fmt.Sprintf(" -X '%s.%s=%s'", poseidon_repo_profile, key, stringBytes)
 			}
 		} else {
+			val, err := payloadBuildMsg.C2Profiles[0].GetArg(key)
+			if err != nil {
+				payloadBuildResponse.Success = false
+				payloadBuildResponse.BuildStdErr = err.Error()
+				return payloadBuildResponse
+			}
 			ldflags += fmt.Sprintf(" -X '%s.%s=%v'", poseidon_repo_profile, key, val)
 		}
 	}
-
-	ldflags += fmt.Sprintf(" -X '%s.proxy_bypass=%v'", poseidon_repo_profile, payloadBuildMsg.BuildParameters["proxy_bypass"])
+	proxyBypass, err := payloadBuildMsg.BuildParameters.GetBooleanArg("proxy_bypass")
+	if err != nil {
+		payloadBuildResponse.Success = false
+		payloadBuildResponse.BuildStdErr = err.Error()
+		return payloadBuildResponse
+	}
+	architecture, err := payloadBuildMsg.BuildParameters.GetStringArg("architecture")
+	if err != nil {
+		payloadBuildResponse.Success = false
+		payloadBuildResponse.BuildStdErr = err.Error()
+		return payloadBuildResponse
+	}
+	mode, err := payloadBuildMsg.BuildParameters.GetStringArg("mode")
+	if err != nil {
+		payloadBuildResponse.Success = false
+		payloadBuildResponse.BuildStdErr = err.Error()
+		return payloadBuildResponse
+	}
+	garble, err := payloadBuildMsg.BuildParameters.GetBooleanArg("garble")
+	if err != nil {
+		payloadBuildResponse.Success = false
+		payloadBuildResponse.BuildStdErr = err.Error()
+		return payloadBuildResponse
+	}
+	ldflags += fmt.Sprintf(" -X '%s.proxy_bypass=%v'", poseidon_repo_profile, proxyBypass)
 	ldflags += " -buildid="
 	goarch := "amd64"
-	if payloadBuildMsg.BuildParameters["architecture"].(string) == "ARM_x64" {
+	if architecture == "ARM_x64" {
 		goarch = "arm64"
 	}
+	tags := payloadBuildMsg.C2Profiles[0].Name
 	command := fmt.Sprintf("rm -rf /deps; CGO_ENABLED=1 GOOS=%s GOARCH=%s ", targetOs, goarch)
-	goCmd := fmt.Sprintf("-tags %s -buildmode %s -ldflags \"%s\"", payloadBuildMsg.C2Profiles[0].Name, payloadBuildMsg.BuildParameters["mode"], ldflags)
+	goCmd := fmt.Sprintf("-tags %s -buildmode %s -ldflags \"%s\"", tags, mode, ldflags)
 	if targetOs == "darwin" {
 		command += "CC=o64-clang CXX=o64-clang++ "
 	} else if targetOs == "windows" {
 		command += "CC=x86_64-w64-mingw32-gcc "
+	} else {
+		if goarch == "arm64" {
+			command += "CC=aarch64-linux-gnu-gcc "
+		}
 	}
 	command += "GOGARBLE=* "
-	if payloadBuildMsg.BuildParameters["garble"].(bool) {
+	if garble {
 		command += "/go/bin/garble -tiny -literals -debug -seed random build "
 	} else {
 		command += "go build "
@@ -145,7 +191,7 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 	}
 	command += fmt.Sprintf("-%s", goarch)
 	payloadName += fmt.Sprintf("-%s", goarch)
-	if payloadBuildMsg.BuildParameters["mode"].(string) == "c-shared" {
+	if mode == "c-shared" {
 		if targetOs == "windows" {
 			command += ".dll"
 			payloadName += ".dll"
@@ -156,7 +202,7 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 			command += ".so"
 			payloadName += ".so"
 		}
-	} else if payloadBuildMsg.BuildParameters["mode"].(string) == "c-archive" {
+	} else if mode == "c-archive" {
 		command += ".a"
 		payloadName += ".a"
 	}
@@ -174,43 +220,21 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 	var stderr bytes.Buffer
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
-	// some extra fake stuff you can do
-	if callback, err := mythicrpc.SendMythicRPCCallbackCreate(mythicrpc.MythicRPCCallbackCreateMessage{
-		PayloadUUID:   payloadBuildMsg.PayloadUUID,
-		C2ProfileName: payloadBuildMsg.C2Profiles[0].Name,
-	}); err != nil {
-		logging.LogError(err, "Failed to create new callback")
-	} else {
-		user := "bob"
-		integrity := 4
-		//description := "updated automatically"
-		ips := []string{"127.0.0.1", "192.168.0.1", ":::80"}
-		if _, err := mythicrpc.SendMythicRPCCallbackUpdate(mythicrpc.MythicRPCCallbackUpdateMessage{
-			AgentCallbackUUID: &callback.CallbackUUID,
-			User:              &user,
-			IntegrityLevel:    &integrity,
-			IPs:               &ips,
-			//Description:       &description,
-		}); err != nil {
-			logging.LogError(err, "Failed to update callback")
-		}
-	}
-	// run is going to fail because it's not poseidon
 	if err := cmd.Run(); err != nil {
 		payloadBuildResponse.Success = false
 		payloadBuildResponse.BuildMessage = "Compilation failed with errors"
-		payloadBuildResponse.BuildStdErr = stderr.String()
+		payloadBuildResponse.BuildStdErr = stderr.String() + "\n" + err.Error()
 		payloadBuildResponse.BuildStdOut = stdout.String()
 		mythicrpc.SendMythicRPCPayloadUpdateBuildStep(mythicrpc.MythicRPCPayloadUpdateBuildStepMessage{
 			PayloadUUID: payloadBuildMsg.PayloadUUID,
 			StepName:    "Compiling",
-			StepSuccess: true,
+			StepSuccess: false,
 			StepStdout:  fmt.Sprintf("failed to compile\n%s\n%s\n%s", stderr.String(), stdout.String(), err.Error()),
 		})
 		return payloadBuildResponse
 	} else {
 		outputString := stdout.String()
-		if !payloadBuildMsg.BuildParameters["garble"].(bool) {
+		if !garble {
 			// only adding stderr if garble is false, otherwise it's too much data
 			outputString += "\n" + stderr.String()
 		}
@@ -222,7 +246,7 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 			StepStdout:  fmt.Sprintf("Successfully executed\n%s", outputString),
 		})
 	}
-	if !payloadBuildMsg.BuildParameters["garble"].(bool) {
+	if !garble {
 		payloadBuildResponse.BuildStdErr = stderr.String()
 	}
 	payloadBuildResponse.BuildStdOut = stdout.String()
@@ -242,5 +266,5 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 func Initialize() {
 	agentstructs.AllPayloadData.Get("basicAgent").AddPayloadDefinition(payloadDefinition)
 	agentstructs.AllPayloadData.Get("basicAgent").AddBuildFunction(build)
-	agentstructs.AllPayloadData.Get("basicAgent").AddIcon(filepath.Join(".", "basic_agent", "agentfunctions", "basicAgent.svg"))
+	agentstructs.AllPayloadData.Get("basicAgent").AddIcon(filepath.Join(".", "basicAgent", "agentfunctions", "basicAgent.svg"))
 }
