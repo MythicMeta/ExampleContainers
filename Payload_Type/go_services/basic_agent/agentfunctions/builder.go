@@ -266,5 +266,5 @@ func build(payloadBuildMsg agentstructs.PayloadBuildMessage) agentstructs.Payloa
 func Initialize() {
 	agentstructs.AllPayloadData.Get("basicAgent").AddPayloadDefinition(payloadDefinition)
 	agentstructs.AllPayloadData.Get("basicAgent").AddBuildFunction(build)
-	agentstructs.AllPayloadData.Get("basicAgent").AddIcon(filepath.Join(".", "basicAgent", "agentfunctions", "basicAgent.svg"))
+	agentstructs.AllPayloadData.Get("basicAgent").AddIcon(filepath.Join(".", "basic_agent", "agentfunctions", "basicAgent.svg"))
 }
