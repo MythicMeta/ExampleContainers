@@ -1,3 +1,0 @@
-setuptools~=65.6.3
-argparse~=1.2.1
-pycryptodome~=3.10.1
