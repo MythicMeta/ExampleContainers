@@ -6,8 +6,8 @@ from mythic_container.MythicRPC import *
 import json
 
 
-class Apfell(PayloadType):
-    name = "apfell"
+class BasicPythonAgent(PayloadType):
+    name = "basic_python_agent"
     file_extension = "js"
     author = "@its_a_feature_"
     supported_os = [SupportedOS.MacOS]
@@ -15,12 +15,12 @@ class Apfell(PayloadType):
     wrapped_payloads = []
     note = """This payload uses JavaScript for Automation (JXA) for execution on macOS boxes."""
     supports_dynamic_loading = True
-    c2_profiles = ["http", "dynamichttp"]
+    c2_profiles = ["http"]
     mythic_encrypts = True
     translation_container = None # "myPythonTranslation"
     build_parameters = []
-    agent_path = pathlib.Path(".") / "apfell"
-    agent_icon_path = agent_path / "agent_functions" / "apfell.svg"
+    agent_path = pathlib.Path(".") / "basic_python_agent"
+    agent_icon_path = agent_path / "agent_functions" / "basic_python_agent.svg"
     agent_code_path = agent_path / "agent_code"
 
     build_steps = [
