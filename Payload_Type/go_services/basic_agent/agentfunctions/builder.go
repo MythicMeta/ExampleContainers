@@ -23,6 +23,7 @@ var payloadDefinition = agentstructs.PayloadType{
 	Description:                            "A fully featured macOS and Linux Golang agent",
 	SupportedC2Profiles:                    []string{"http", "websocket", "poseidon_tcp"},
 	MythicEncryptsData:                     true,
+	MessageFormat:                          agentstructs.MessageFormatJSON,
 	BuildParameters: []agentstructs.BuildParameter{
 		{
 			Name:          "mode",
@@ -30,7 +31,7 @@ var payloadDefinition = agentstructs.PayloadType{
 			Required:      false,
 			DefaultValue:  "default",
 			Choices:       []string{"default", "c-archive", "c-shared"},
-			ParameterType: agentstructs.BUILD_PARAMETER_TYPE_CHOOSE_ONE,
+			ParameterType: agentstructs.BUILD_PARAMETER_TYPE_CHOOSE_ONE_CUSTOM,
 		},
 		{
 			Name:          "architecture",
@@ -53,6 +54,13 @@ var payloadDefinition = agentstructs.PayloadType{
 			Required:      false,
 			DefaultValue:  false,
 			ParameterType: agentstructs.BUILD_PARAMETER_TYPE_BOOLEAN,
+		},
+		{
+			Name:          "supportFiles",
+			Description:   "Uploading multiple support files.",
+			Required:      false,
+			DefaultValue:  false,
+			ParameterType: agentstructs.BUILD_PARAMETER_TYPE_FILE_MULTIPLE,
 		},
 	},
 	BuildSteps: []agentstructs.BuildStep{

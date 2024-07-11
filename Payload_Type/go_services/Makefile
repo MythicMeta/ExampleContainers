@@ -1,5 +1,5 @@
 BINARY_NAME?=mythic_go_services
-DEBUG_LEVEL?="debug"
+DEBUG_LEVEL?="trace"
 RABBITMQ_HOST?="127.0.0.1"
 RABBITMQ_PASSWORD?="PqR9XJ957sfHqcxj6FsBMj4p"
 MYTHIC_SERVER_HOST?="127.0.0.1"
@@ -12,6 +12,7 @@ WEBHOOK_DEFAULT_STARTUP_CHANNEL?=
 
 build:
 	go mod download
+	go run github.com/Khan/genqlient
 	go mod tidy
 	GOOS=linux go build -o ${BINARY_NAME} .
 	cp ${BINARY_NAME} /
@@ -20,7 +21,11 @@ run:
 	cp /${BINARY_NAME} .
 	./${BINARY_NAME}
 
-run_custom:
+local:
+	go run github.com/Khan/genqlient
+	go build -o ${BINARY_NAME} .
+
+run_custom: local
 	DEBUG_LEVEL=${DEBUG_LEVEL} \
 RABBITMQ_HOST=${RABBITMQ_HOST} \
 RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD} \
