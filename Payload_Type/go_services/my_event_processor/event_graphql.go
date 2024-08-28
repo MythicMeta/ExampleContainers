@@ -8,8 +8,8 @@ const CreateTagType = `# @genqlient
     }
 `
 const CreateNewTagMutation = `# @genqlient
-	mutation CreateNewTag($tagtype_id: Int!, $source: String!, $url: String!, $data: jsonb!, $filemeta_id: Int!) {
-	  insert_tag_one(object: {data: $data, source: $source, tagtype_id: $tagtype_id, url: $url, filemeta_id: $filemeta_id}) {
+	mutation CreateNewTag($tagtype_id: Int!, $source: String!, $url: String!, $data: jsonb!, $task_id: Int!) {
+	  insert_tag_one(object: {data: $data, source: $source, tagtype_id: $tagtype_id, url: $url, task_id: $task_id}) {
 		id
 	  }
 	}
@@ -22,4 +22,12 @@ const GetPayloadDataQuery = `# @genqlient
 		}
       }
     }
+`
+const UpdateCallbackMutation = `# @genqlient
+	mutation UpdateCallback($callback_display_id: Int, $description: String){
+		updateCallback(input: {callback_display_id: $callback_display_id, description: $description}) {
+			status
+			error
+		}
+	}
 `
