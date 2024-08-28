@@ -16,7 +16,7 @@ func init() {
 		SupportedUIFeatures: []string{"file_browser:list"},
 		Author:              "@xorrior",
 		AssociatedBrowserScript: &agentstructs.BrowserScript{
-			ScriptPath: filepath.Join(".", "poseidon", "browserscripts", "ls_new.js"),
+			ScriptPath: filepath.Join(".", "basic_agent", "browserscripts", "ls_new.js"),
 			Author:     "@its_a_feature_",
 		},
 		TaskFunctionCreateTasking: func(taskData *agentstructs.PTTaskMessageAllData) agentstructs.PTTaskCreateTaskingMessageResponse {

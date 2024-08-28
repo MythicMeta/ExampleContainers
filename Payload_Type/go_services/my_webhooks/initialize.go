@@ -6,6 +6,8 @@ import (
 
 func Initialize() {
 	myWebhooks := webhookstructs.WebhookDefinition{
+		Name:                "my_webhooks",
+		Description:         "default webhook for slack example",
 		NewFeedbackFunction: newfeedbackWebhook,
 		NewCallbackFunction: newCallbackWebhook,
 		NewStartupFunction:  newStartupMessage,

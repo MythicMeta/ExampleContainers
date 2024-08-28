@@ -36,7 +36,7 @@ func getC2JsonConfig() (*config, error) {
 }
 
 var httpc2definition = c2structs.C2Profile{
-	Name:             "http",
+	Name:             "customHTTP",
 	Author:           "@its_a_feature_",
 	Description:      "Uses HTTP Get/Post messages for connectivity",
 	IsP2p:            false,
@@ -276,6 +276,18 @@ var httpc2parameters = []c2structs.C2Parameter{
 		VerifierRegex: "^[0-9]+$",
 	},
 	{
+		Name:          "multiple_files",
+		Description:   "Upload multiple files here",
+		ParameterType: c2structs.C2_PARAMETER_TYPE_FILE_MULTIPLE,
+	},
+	{
+		Name:          "choose one custom",
+		Description:   "Choose one custom",
+		ParameterType: c2structs.C2_PARAMETER_TYPE_CHOOSE_ONE_CUSTOM,
+		Choices:       []string{"option 1", "option 2"},
+		DefaultValue:  "option 1",
+	},
+	{
 		Name:          "killdate",
 		Description:   "Kill Date",
 		DefaultValue:  365,
@@ -398,6 +410,6 @@ var httpc2parameters = []c2structs.C2Parameter{
 }
 
 func Initialize() {
-	c2structs.AllC2Data.Get("http").AddC2Definition(httpc2definition)
-	c2structs.AllC2Data.Get("http").AddParameters(httpc2parameters)
+	c2structs.AllC2Data.Get("customHTTP").AddC2Definition(httpc2definition)
+	c2structs.AllC2Data.Get("customHTTP").AddParameters(httpc2parameters)
 }
