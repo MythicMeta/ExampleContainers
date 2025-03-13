@@ -8,7 +8,7 @@ toolchain go1.23.3
 
 require (
 	github.com/Khan/genqlient v0.8.0
-	github.com/MythicMeta/MythicContainer v1.4.19
+	github.com/MythicMeta/MythicContainer v1.4.20
 	github.com/crewjam/saml v0.4.14
 	github.com/mitchellh/mapstructure v1.5.0
 )
@@ -52,7 +52,7 @@ require (
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/tools v0.31.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250311190419-81fb87f6b8bf // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250313182123-33a14cd5fa76 // indirect
 	google.golang.org/grpc v1.71.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
