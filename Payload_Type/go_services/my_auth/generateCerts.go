@@ -29,7 +29,7 @@ func generateCerts(name string) error {
 	if FileExists(certPath) && FileExists(keyPath) {
 		return nil
 	}
-	fmt.Printf("[*] Failed to find SSL certs for Nginx container, generating now...\n")
+	fmt.Printf("[*] Failed to find SSL certs for Auth container, generating now...\n")
 	priv, err := rsa.GenerateKey(rand.Reader, 4096)
 	if err != nil {
 		log.Println(err.Error())

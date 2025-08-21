@@ -196,7 +196,7 @@ type getTagTypesTagtype struct {
 // GetId returns getTagTypesTagtype.Id, and is useful for accessing the field via an interface.
 func (v *getTagTypesTagtype) GetId() int { return v.Id }
 
-// The query or mutation executed by CreateNewTag.
+// The mutation executed by CreateNewTag.
 const CreateNewTag_Operation = `
 mutation CreateNewTag ($tagtype_id: Int!, $source: String!, $url: String!, $data: jsonb!, $task_id: Int!) {
 	insert_tag_one(object: {data:$data,source:$source,tagtype_id:$tagtype_id,url:$url,task_id:$task_id}) {
@@ -213,7 +213,7 @@ func CreateNewTag(
 	url string,
 	data map[string]interface{},
 	task_id int,
-) (*CreateNewTagResponse, error) {
+) (data_ *CreateNewTagResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "CreateNewTag",
 		Query:  CreateNewTag_Operation,
@@ -225,10 +225,9 @@ func CreateNewTag(
 			Task_id:    task_id,
 		},
 	}
-	var err_ error
 
-	var data_ CreateNewTagResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &CreateNewTagResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -236,10 +235,10 @@ func CreateNewTag(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by CreateNewTagType.
+// The mutation executed by CreateNewTagType.
 const CreateNewTagType_Operation = `
 mutation CreateNewTagType ($color: String!, $description: String!, $name: String!) {
 	insert_tagtype_one(object: {color:$color,description:$description,name:$name}, on_conflict: {constraint:tagtype_name_operation_id_key,update_columns:color}) {
@@ -254,7 +253,7 @@ func CreateNewTagType(
 	color string,
 	description string,
 	name string,
-) (*CreateNewTagTypeResponse, error) {
+) (data_ *CreateNewTagTypeResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "CreateNewTagType",
 		Query:  CreateNewTagType_Operation,
@@ -264,10 +263,9 @@ func CreateNewTagType(
 			Name:        name,
 		},
 	}
-	var err_ error
 
-	var data_ CreateNewTagTypeResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &CreateNewTagTypeResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -275,10 +273,10 @@ func CreateNewTagType(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by GetPayloadData.
+// The query executed by GetPayloadData.
 const GetPayloadData_Operation = `
 query GetPayloadData ($uuid: String!) {
 	payload(where: {uuid:{_eq:$uuid}}) {
@@ -293,7 +291,7 @@ func GetPayloadData(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	uuid string,
-) (*GetPayloadDataResponse, error) {
+) (data_ *GetPayloadDataResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "GetPayloadData",
 		Query:  GetPayloadData_Operation,
@@ -301,10 +299,9 @@ func GetPayloadData(
 			Uuid: uuid,
 		},
 	}
-	var err_ error
 
-	var data_ GetPayloadDataResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &GetPayloadDataResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -312,10 +309,10 @@ func GetPayloadData(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by UpdateCallback.
+// The mutation executed by UpdateCallback.
 const UpdateCallback_Operation = `
 mutation UpdateCallback ($callback_display_id: Int, $description: String) {
 	updateCallback(input: {callback_display_id:$callback_display_id,description:$description}) {
@@ -330,7 +327,7 @@ func UpdateCallback(
 	client_ graphql.Client,
 	callback_display_id int,
 	description string,
-) (*UpdateCallbackResponse, error) {
+) (data_ *UpdateCallbackResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "UpdateCallback",
 		Query:  UpdateCallback_Operation,
@@ -339,10 +336,9 @@ func UpdateCallback(
 			Description:         description,
 		},
 	}
-	var err_ error
 
-	var data_ UpdateCallbackResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &UpdateCallbackResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -350,10 +346,10 @@ func UpdateCallback(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }
 
-// The query or mutation executed by getTagTypes.
+// The query executed by getTagTypes.
 const getTagTypes_Operation = `
 query getTagTypes ($name: String!) {
 	tagtype(where: {name:{_eq:$name}}) {
@@ -366,7 +362,7 @@ func getTagTypes(
 	ctx_ context.Context,
 	client_ graphql.Client,
 	name string,
-) (*getTagTypesResponse, error) {
+) (data_ *getTagTypesResponse, err_ error) {
 	req_ := &graphql.Request{
 		OpName: "getTagTypes",
 		Query:  getTagTypes_Operation,
@@ -374,10 +370,9 @@ func getTagTypes(
 			Name: name,
 		},
 	}
-	var err_ error
 
-	var data_ getTagTypesResponse
-	resp_ := &graphql.Response{Data: &data_}
+	data_ = &getTagTypesResponse{}
+	resp_ := &graphql.Response{Data: data_}
 
 	err_ = client_.MakeRequest(
 		ctx_,
@@ -385,5 +380,5 @@ func getTagTypes(
 		resp_,
 	)
 
-	return &data_, err_
+	return data_, err_
 }

@@ -3,7 +3,8 @@ from mythic_container.MythicGoRPC.send_mythic_rpc_task_search import *
 
 
 class MyWebhook(Webhook):
-
+    name = "MyBasicWebhook"
+    description = "This is my description of what I do and why!"
     async def new_startup(self, inputMsg: WebhookMessage) -> None:
         message = {
             "channel": f"#{self.getWebhookChannel(inputMsg=inputMsg)}",

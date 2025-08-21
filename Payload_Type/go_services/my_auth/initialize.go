@@ -13,6 +13,7 @@ import (
 	"github.com/MythicMeta/MythicContainer/utils/sharedStructs"
 	"github.com/crewjam/saml"
 	"github.com/crewjam/saml/samlsp"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -38,9 +39,6 @@ func loadConfig() (map[string]string, error) {
 	return currentConfig, nil
 }
 func initializeSAMLSP(authName string, serverName string) error {
-	if samlSP != nil {
-		return nil
-	}
 	err := generateCerts(authName)
 	if err != nil {
 		return err
@@ -58,12 +56,28 @@ func initializeSAMLSP(authName string, serverName string) error {
 	if err != nil {
 		return err
 	}
-	idpFileMetadata := config["metadata_file"]
-	idpFileBytes, err := os.ReadFile(idpFileMetadata)
-	if err != nil {
-		return err
-	}
 	idpMetadata := saml.EntityDescriptor{}
+	var idpFileBytes []byte
+	if idpFileMetadata, ok := config["metadata_file"]; ok {
+		if idpFileMetadata != "" {
+			idpFileBytes, err = os.ReadFile(idpFileMetadata)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	if idpFileMetadata, ok := config["metadata_url"]; ok {
+		if idpFileMetadata != "" {
+			resp, err := http.Get(idpFileMetadata)
+			if err != nil {
+				return err
+			}
+			idpFileBytes, err = io.ReadAll(resp.Body)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	err = xml.Unmarshal(idpFileBytes, &idpMetadata)
 	if err != nil {
 		return err
@@ -102,7 +116,7 @@ func Initialize() {
 		IDPServices:    []string{"ADFS"},
 		NonIDPServices: []string{"LDAP"},
 		OnContainerStartFunction: func(message sharedStructs.ContainerOnStartMessage) sharedStructs.ContainerOnStartMessageResponse {
-			logging.LogInfo("started", "inputMsg", message)
+			//logging.LogInfo("started", "inputMsg", message)
 			return sharedStructs.ContainerOnStartMessageResponse{}
 		},
 		GetIDPMetadata: func(message authstructs.GetIDPMetadataMessage) authstructs.GetIDPMetadataMessageResponse {

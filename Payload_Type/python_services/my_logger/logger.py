@@ -9,6 +9,8 @@ class MyLogger(Log):
     LogLevel = logging.DEBUG
     LogMaxSizeInMB = 10
     LogMaxBackups = 5
+    name = "MyLittleLogger"
+    description = "My Little logger just logs to stdout"
 
     def __init__(self):
         self.mylogger = logging.getLogger('mylogger')

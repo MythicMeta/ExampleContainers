@@ -3,7 +3,7 @@ import pathlib
 
 
 class Websocket(C2Profile):
-    name = "websocket"
+    name = "websocket_example"
     description = "Websocket C2 Server for poseidon"
     author = "@xorrior"
     is_p2p = False
