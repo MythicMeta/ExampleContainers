@@ -8,7 +8,7 @@ toolchain go1.23.3
 
 require (
 	github.com/Khan/genqlient v0.8.0
-	github.com/MythicMeta/MythicContainer v1.4.20
+	github.com/MythicMeta/MythicContainer v1.4.23
 	github.com/crewjam/saml v0.4.14
 	github.com/mitchellh/mapstructure v1.5.0
 )

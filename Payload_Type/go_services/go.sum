@@ -8,6 +8,8 @@ github.com/MythicMeta/MythicContainer v1.4.19 h1:/85sOCafRuCyvWpEl/zoC1YEOGghJ8z
 github.com/MythicMeta/MythicContainer v1.4.19/go.mod h1:BnUYftqQ9KsGxBd6RlyRcAHBrqV1CUcrRCjktWwc2Do=
 github.com/MythicMeta/MythicContainer v1.4.20 h1:r+kYKXkMXgYMVL3C6qQR7HF/vaUmY7P/FHxMHrah6Rc=
 github.com/MythicMeta/MythicContainer v1.4.20/go.mod h1:BnUYftqQ9KsGxBd6RlyRcAHBrqV1CUcrRCjktWwc2Do=
+github.com/MythicMeta/MythicContainer v1.4.23 h1:wKRoAHPlyvV+qfd9HepTbOPVwzHev4gLkQHu+LmxqrI=
+github.com/MythicMeta/MythicContainer v1.4.23/go.mod h1:BnUYftqQ9KsGxBd6RlyRcAHBrqV1CUcrRCjktWwc2Do=
 github.com/agnivade/levenshtein v1.1.1 h1:QY8M92nrzkmr798gCo3kmMyqXFzdQVpxLlGPRBij0P8=
 github.com/agnivade/levenshtein v1.1.1/go.mod h1:veldBMzWxcCG2ZvUTKD2kJNRdCk5hVbJomOvKkmgYbo=
 github.com/agnivade/levenshtein v1.2.1 h1:EHBY3UOn1gwdy/VbFwgo4cxecRznFk7fKWN1KOX7eoM=
