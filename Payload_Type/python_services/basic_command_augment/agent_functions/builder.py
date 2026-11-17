@@ -12,3 +12,4 @@ class BasicCommandAugment(PayloadType):
     agent_code_path = agent_path / "agent_code"
     command_augment_supported_agents = [] # this means these commands are injected into all agent's callbacks on macOS
     agent_type = AgentType.CommandAugment
+    semver = "0.4.0"

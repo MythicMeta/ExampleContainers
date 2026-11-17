@@ -2,6 +2,7 @@
 import mythic_container
 import asyncio
 import basic_python_agent
+import basic_wrapper
 import websocket.mythic.c2_functions.websocket
 from translator.translator import *
 from my_logger import logger

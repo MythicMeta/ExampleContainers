@@ -8,6 +8,7 @@ class Websocket(C2Profile):
     author = "@xorrior"
     is_p2p = False
     is_server_routed = False
+    semver = "0.4.0"
     server_binary_path = pathlib.Path(".") / "websocket" / "c2_code" / "server"
     server_folder_path = pathlib.Path(".") / "websocket" / "c2_code"
     parameters = [
