@@ -22,6 +22,7 @@ class BasicPythonAgent(PayloadType):
     agent_path = pathlib.Path(".") / "basic_python_agent"
     agent_icon_path = agent_path / "agent_functions" / "basic_python_agent.svg"
     agent_code_path = agent_path / "agent_code"
+    semver = "0.4.0"
 
     build_steps = [
         BuildStep(step_name="Gathering Files", step_description="Making sure all commands have backing files on disk"),
@@ -89,6 +90,10 @@ class BasicPythonAgent(PayloadType):
                 StepSuccess=True
             ))
             resp.payload = base_code.encode()
+            # Mythic v4: return build metadata for wrapper compatibility discovery
+            resp.build_metadata = PayloadBuildMetadata(
+                format="Source",
+            )
             if build_msg != "":
                 resp.build_stderr = build_msg
                 resp.set_status(BuildStatus.Error)
